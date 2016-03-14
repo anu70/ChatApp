@@ -1,6 +1,7 @@
 package in.org.verkstad.chat_app;
 
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,26 +28,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class users_list extends AppCompatActivity {
-    String name,emailid,registration_id;
+
     String[] name_list,email_list,regId_list;
     ListView users_list;
+    AppConfig appConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_list);
         users_list = (ListView) findViewById(R.id.users_list);
-
-        AppConfig appConfig = new AppConfig();
-
-        Intent i =getIntent();
-        name = i.getStringExtra("name");
-        emailid = i.getStringExtra("emailid");
-        registration_id = i.getStringExtra("registration_id");
-        //Toast.makeText(getApplicationContext(),name+emailid+registration_id,Toast.LENGTH_SHORT).show();
-
+        appConfig = new AppConfig();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,appConfig.url, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, appConfig.url, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 try {
@@ -63,13 +57,70 @@ public class users_list extends AppCompatActivity {
                         regId_list[i] = n.getString("gcm_reg_id");
                     }
 
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,name_list);
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(in.org.verkstad.chat_app.users_list.this,R.layout.support_simple_spinner_dropdown_item,name_list);
                     users_list.setAdapter(arrayAdapter);
 
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"exception"+e,Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String,String> params = new HashMap<>();
+                params.put("TAG","getusers");
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+
+
+        users_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String listview_regID = regId_list[position];
+                //Toast.makeText(getApplicationContext(),listview_regID,Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(users_list.this,chat_window.class);
+                intent.putExtra("listview_regID",listview_regID);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    public void send_regIDs_to_server(final Context context,final String name, final String emailid, final String registration_id){
+        appConfig = new AppConfig();
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,appConfig.url,new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+              /**  try {
+                    JSONArray jsonArray = new JSONArray(s);
+
+                    name_list = new String[jsonArray.length()];
+                    email_list = new String[jsonArray.length()];
+                    regId_list = new String[jsonArray.length()];
+
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject n = jsonArray.getJSONObject(i);
+                        name_list[i] = n.getString("name");
+                        email_list[i] = n.getString("email");
+                        regId_list[i] = n.getString("gcm_reg_id");
+                    }
+
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(context,R.layout.support_simple_spinner_dropdown_item,name_list);
+                    users_list.setAdapter(arrayAdapter);
+
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),"exception"+e,Toast.LENGTH_SHORT).show();
+                } **/
             }
         }, new Response.ErrorListener() {
             @Override
@@ -88,18 +139,6 @@ public class users_list extends AppCompatActivity {
         };
 
         requestQueue.add(stringRequest);
-
-        users_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String listview_regID = regId_list[position];
-                //Toast.makeText(getApplicationContext(),listview_regID,Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(users_list.this,chat_window.class);
-                intent.putExtra("listview_regID",listview_regID);
-                startActivity(intent);
-            }
-        });
-
 
     }
 

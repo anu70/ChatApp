@@ -40,15 +40,6 @@
         android:id="@+id/Register_user"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="31dp"
-        android:onClick="Register_user"
         android:layout_centerVertical="true" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="UnRegister"
-        android:id="@+id/button"
-        android:layout_below="@+id/Register_user"
-        android:layout_centerHorizontal="true"
-        android:onClick="unregister" />
 </RelativeLayout>

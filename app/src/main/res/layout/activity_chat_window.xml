@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="in.org.verkstad.chat_app.chat_window">
     <view
-        android:id="@+id/recycler_view_leader_board"
+        android:id="@+id/recycler_view_chat_window"
         class="android.support.v7.widget.RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
